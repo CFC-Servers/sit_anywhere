@@ -20,6 +20,7 @@ local AntiPropSurf = CreateConVar("sitting_anti_prop_surf","1",{FCVAR_NOTIFY, FC
 local AntiToolAbuse = CreateConVar("sitting_anti_tool_abuse","1",{FCVAR_NOTIFY, FCVAR_ARCHIVE})
 local AllowGroundSit = CreateConVar("sitting_allow_ground_sit","1",{FCVAR_NOTIFY, FCVAR_ARCHIVE})
 local SittingNoAltServer = CreateConVar("sitting_force_no_alt","0",{FCVAR_NOTIFY, FCVAR_ARCHIVE, FCVAR_REPLICATED})
+local ParentSeat = CreateConVar("sitting_parent_seat","1",{FCVAR_ARCHIVE, FCVAR_REPLICATED}) -- Should the seat be parented to where it is created
 
 
 local META = FindMetaTable("Player")
@@ -85,8 +86,10 @@ local function Sit(ply, pos, ang, parent, parentbone,  func, exit)
 		local r = math.rad(ang.yaw+90)
 		vehicle.plyposhack = vehicle:WorldToLocal(pos + Vector(math.cos(r)*2,math.sin(r)*2,2))
 
-		vehicle:SetParent(parent)
-		vehicle.parent=parent
+		if ParentSeat then
+            vehicle:SetParent(parent)
+            vehicle.parent = parent
+        end
 	else
 		vehicle.OnWorld = true
 	end
@@ -466,11 +469,12 @@ function CheckSeat(ply, ent, tbl)
 	if not ply:InVehicle() then return true end
 
 	local vehicle = ply:GetVehicle()
-	local parent = vehicle.parent
 
-	if parent == ent then
-		return false
-	end
+	if ParentSeat then
+        if vehicle.parent == ent then
+            return false
+        end
+    end
 
 	for _,v in next, ent:GetChildren() do
 		if IsValid(v) and not tbl[v] then
