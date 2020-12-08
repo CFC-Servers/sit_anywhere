@@ -86,7 +86,7 @@ local function Sit(ply, pos, ang, parent, parentbone,  func, exit)
 		local r = math.rad(ang.yaw+90)
 		vehicle.plyposhack = vehicle:WorldToLocal(pos + Vector(math.cos(r)*2,math.sin(r)*2,2))
 
-		if ParentSeat then
+		if ParentSeat:GetBool() then
             vehicle:SetParent(parent)
             vehicle.parent = parent
         end
@@ -470,7 +470,7 @@ function CheckSeat(ply, ent, tbl)
 
 	local vehicle = ply:GetVehicle()
 
-	if ParentSeat then
+	if ParentSeat:GetBool() then
         if vehicle.parent == ent then
             return false
         end
