@@ -34,6 +34,7 @@ local function Sit(ply, pos, ang, parent, parentbone,  func, exit)
 	ply:ExitVehicle()
 
 	local vehicle = ents.Create("prop_vehicle_prisoner_pod")
+
 	vehicle:SetAngles(ang)
 	pos = pos + vehicle:GetUp()*18
 	vehicle:SetPos(pos)
@@ -48,6 +49,8 @@ local function Sit(ply, pos, ang, parent, parentbone,  func, exit)
 	vehicle:SetKeyValue("limitview","0")
 	vehicle:Spawn()
 	vehicle:Activate()
+
+	vehicle.DoNotDuplicate = true
 	
 	if not IsValid(vehicle) or not IsValid(vehicle:GetPhysicsObject()) then 
 		SafeRemoveEntity(vehicle)
