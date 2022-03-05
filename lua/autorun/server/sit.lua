@@ -468,11 +468,12 @@ local function UndoSitting( self, ply )
         ply:SetAllowWeaponsInVehicle( prev )
     end
 
+    if not IsValid( self ) then return end
+
     if self.exit then
         self.exit( ply )
     end
 
-    if not IsValid( self ) then return end
     self:Remove()
 end
 
