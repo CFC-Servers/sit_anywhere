@@ -9,13 +9,9 @@ local forceBinds = CreateClientConVar("sitting_force_binds",       "1", true, tr
 local SittingNoAltServer = CreateConVar("sitting_force_no_alt","0", {FCVAR_NOTIFY, FCVAR_ARCHIVE, FCVAR_REPLICATED})
 local activeTimer = {}
 
-
-
-
 local function ShouldSit(ply)
     return hook.Run("ShouldSit", ply)
 end
-
 
 local function drawCircleThing( x, y, outerRadius, segments, startI, endI)
     local cir = {}
@@ -28,7 +24,7 @@ local function drawCircleThing( x, y, outerRadius, segments, startI, endI)
 
         table.insert( cir, { x = x + math.sin( a * -1 ) * outerRadius, y = y + math.cos(  a * -1 ) * outerRadius, u = math.sin( a ) / 2 + 0.5, v = math.cos( a ) / 2 + 0.5 } )
     end
-    
+
     surface.DrawPoly( cir )
 
 end
@@ -38,8 +34,6 @@ surface.CreateFont('sitfont', {
     size = 32,
     weight = 800,
 })
-
-
 
 hook.Add("HUDPaint", "SittingDrawHUD", function()
     if activeTimer.startTime then
@@ -65,8 +59,6 @@ hook.Add("HUDPaint", "SittingDrawHUD", function()
                     surface.SetDrawColor(150, 150, 150, 150)
                     surface.DrawRect(ScrW()/2 - width * timeRatio /2, (ScrH()/4 * 1) - 1, width * timeRatio, 2)
                 end
-
-                
             else
                 activeTimer = {}
                 RunConsoleCommand("sit")
@@ -79,7 +71,7 @@ hook.Add("HUDPaint", "SittingDrawHUD", function()
             surface.SetTextColor(Color(0, 0, 0, 255 * math.max(timeRatio, 0.1)))
             surface.DrawText(txt)
         end
-        
+
     end
 end)
 
@@ -134,7 +126,6 @@ hook.Add("KeyPress","seats_use",function(ply,key)
         end
     end
 end)
-
 
 hook.Add("KeyRelease","seats_use",function(ply,key)
     if not IsFirstTimePredicted() and not game.SinglePlayer() then return end
