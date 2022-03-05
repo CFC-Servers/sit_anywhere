@@ -456,6 +456,7 @@ local function UndoSitting(self, ply)
 	if(self.exit) then
 		self.exit(ply)
 	end
+    if not IsValid( self ) then return end
 	self:Remove()
 end
 
