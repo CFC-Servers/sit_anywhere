@@ -2,9 +2,10 @@ local newUI = CreateClientConVar( "sitting_new_ui", "0.00", true, true )
 local useAlt = CreateClientConVar( "sitting_use_alt", "1.00", true, true )
 local sitTimer = CreateClientConVar( "sitting_sit_timer", "0.25", true, true )
 local sitStartTimer = CreateClientConVar( "sitting_sit_starttimer", "0.75", true, true )
-local groundSit = CreateClientConVar( "sitting_ground_sit", "1.00", true, true )
-local notOnMe = CreateClientConVar( "sitting_disallow_on_me", "0.00", true, true )
 local forceBinds = CreateClientConVar( "sitting_force_binds", "1", true, true )
+
+CreateClientConVar( "sitting_ground_sit", "1.00", true, true )
+CreateClientConVar( "sitting_disallow_on_me", "0.00", true, true )
 
 local SittingNoAltServer = CreateConVar( "sitting_force_no_alt", "0", { FCVAR_NOTIFY, FCVAR_ARCHIVE, FCVAR_REPLICATED } )
 
@@ -40,7 +41,7 @@ local function drawCircleThing( x, y, outerRadius, segments, startI, endI )
     surface.DrawPoly( cir )
 end
 
-surface.CreateFont( 'sitfont', {
+surface.CreateFont( "sitfont", {
     font = "Roboto Bk",
     size = 32,
     weight = 800,
@@ -122,13 +123,11 @@ hook.Add( "KeyPress", "seats_use", function( ply, key )
             local EyeTrace = ply:GetEyeTrace()
             local ang = EyeTrace.HitNormal:Angle() + Angle( -270, 0, 0 )
 
-            if ( math.abs( ang.pitch ) <= 15 ) then
-                if activeTimer.startTime == nil then
-                    activeTimer.startTime = SysTime()
-                    activeTimer.timeToSit = sitTimer:GetFloat()
-                    activeTimer.trace = ply:GetEyeTrace()
-                    activeTimer.drawType = newUI:GetInt()
-                end
+            if math.abs( ang.pitch ) <= 15 and activeTimer.startTime == nil then
+                activeTimer.startTime = SysTime()
+                activeTimer.timeToSit = sitTimer:GetFloat()
+                activeTimer.trace = ply:GetEyeTrace()
+                activeTimer.drawType = newUI:GetInt()
             end
         else
             activeTimer = {}
@@ -137,7 +136,7 @@ hook.Add( "KeyPress", "seats_use", function( ply, key )
     end
 end )
 
-hook.Add( "KeyRelease", "seats_use", function( ply, key )
+hook.Add( "KeyRelease", "seats_use", function( _, key )
     if not IsFirstTimePredicted() and not game.SinglePlayer() then return end
     if key ~= IN_USE then return end
     activeTimer = {}

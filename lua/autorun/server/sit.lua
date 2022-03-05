@@ -24,7 +24,7 @@ local FixLegBug = CreateConVar( "sitting_fix_leg_bug", "1", { FCVAR_NOTIFY, FCVA
 local AntiPropSurf = CreateConVar( "sitting_anti_prop_surf", "1", { FCVAR_NOTIFY, FCVAR_ARCHIVE } )
 local AntiToolAbuse = CreateConVar( "sitting_anti_tool_abuse", "1", { FCVAR_NOTIFY, FCVAR_ARCHIVE } )
 local AllowGroundSit = CreateConVar( "sitting_allow_ground_sit", "1", { FCVAR_NOTIFY, FCVAR_ARCHIVE } )
-local SittingNoAltServer = CreateConVar( "sitting_force_no_alt", "0", { FCVAR_NOTIFY, FCVAR_ARCHIVE, FCVAR_REPLICATED } )
+CreateConVar( "sitting_force_no_alt", "0", { FCVAR_NOTIFY, FCVAR_ARCHIVE, FCVAR_REPLICATED } )
 
 -- Should the seat be parented to where it is created
 local ParentSeat = CreateConVar( "sitting_parent_seat", "1", { FCVAR_ARCHIVE, FCVAR_REPLICATED } )
@@ -36,7 +36,7 @@ local function ShouldAlwaysSit( ply )
     return hook.Run( "ShouldAlwaysSit", ply )
 end
 
-local function Sit( ply, pos, ang, parent, parentbone, func, exit )
+local function Sit( ply, pos, ang, parent, _, func, exit )
     ply:ExitVehicle()
     local vehicle = ents.Create( "prop_vehicle_prisoner_pod" )
     vehicle:SetAngles( ang )
@@ -116,7 +116,6 @@ local function Sit( ply, pos, ang, parent, parentbone, func, exit )
     vehicle.removeonexit = true
     vehicle.exit = exit
     vehicle.sittingPly = ply
-    local ang = vehicle:GetAngles()
     ply:SetEyeAngles( Angle( 0, 90, 0 ) )
 
     if func then
@@ -173,7 +172,7 @@ local SittingOnPlayerPoses = {
 
 local lookup = {}
 
-for k, v in pairs( SittingOnPlayerPoses ) do
+for _, v in pairs( SittingOnPlayerPoses ) do
     table.insert( lookup, { v.FindAng, v } )
 
     table.insert( lookup, { v.FindAng + 360, v } )
@@ -240,7 +239,7 @@ function META.Sit( ply, EyeTrace, ang, parent, parentbone, func, exit )
     local sitting_disallow_on_me = ply:GetInfoNum( "sitting_disallow_on_me", 0 ) == 1
 
     if SittingOnPlayer:GetBool() then
-        for k, v in pairs( ents.FindInSphere( EyeTrace.HitPos, 5 ) ) do
+        for _, v in pairs( ents.FindInSphere( EyeTrace.HitPos, 5 ) ) do
             local safe = 256
 
             while IsValid( v.SittingOnMe ) and safe > 0 do
@@ -250,7 +249,7 @@ function META.Sit( ply, EyeTrace, ang, parent, parentbone, func, exit )
 
             if v:GetClass() == "prop_vehicle_prisoner_pod" and v:GetModel() ~= "models/vehicles/prisoner_pod_inner.mdl" and v:GetDriver() and v:GetDriver():IsValid() and not v.PlayerSitOnPlayer then
                 if v:GetDriver():GetInfoNum( "sitting_disallow_on_me", 0 ) ~= 0 then
-                    ply:ChatPrint( v:GetDriver():Name() .. ' has disabled sitting!' )
+                    ply:ChatPrint( v:GetDriver():Name() .. " has disabled sitting!" )
 
                     return
                 end
@@ -281,7 +280,7 @@ function META.Sit( ply, EyeTrace, ang, parent, parentbone, func, exit )
             end
         end
     else
-        for k, v in pairs( ents.FindInSphere( EyeTrace.HitPos, 5 ) ) do
+        for _, v in pairs( ents.FindInSphere( EyeTrace.HitPos, 5 ) ) do
             if v.removeonexit then return end
         end
     end
@@ -312,7 +311,6 @@ function META.Sit( ply, EyeTrace, ang, parent, parentbone, func, exit )
     EyeTrace2Tr.filter = ply
     EyeTrace2Tr.mins = Vector( -5, -5, -5 )
     EyeTrace2Tr.maxs = Vector( 5, 5, 5 )
-    local EyeTrace2 = util.TraceHull( EyeTrace2Tr )
     --if EyeTrace2.Entity ~= EyeTrace.Entity then return end
     local ang = EyeTrace.HitNormal:Angle() + Angle( -270, 0, 0 )
 
@@ -458,7 +456,7 @@ local function sitcmd( ply )
     end
 end
 
-concommand.Add( "sit", function( ply, cmd, args )
+concommand.Add( "sit", function( ply )
     sitcmd( ply )
 end )
 
@@ -534,7 +532,7 @@ hook.Add( "CanTool", "SA_DontTouchYourself", function( ply, tr )
     end
 end )
 
-hook.Add( "PlayerSwitchWeapon", "VehicleFOVFix", function( ply, ent )
+hook.Add( "PlayerSwitchWeapon", "VehicleFOVFix", function( ply )
     if IsValid( ply ) and ply:InVehicle() then
         ply:SetFOV( ply:GetFOV(), 0 )
     end
@@ -552,7 +550,7 @@ hook.Add( "CanExitVehicle", "Remove_Seat", function( self, ply )
     if ShouldAlwaysSit( ply ) then
         -- Movie gamemode
         if ply.UnStuck then
-            local pos, ang = LocalToWorld( Vector( 0, 36, 20 ), Angle(), self:GetPos(), Angle( 0, self:GetAngles().yaw, 0 ) )
+            local pos = LocalToWorld( Vector( 0, 36, 20 ), Angle(), self:GetPos(), Angle( 0, self:GetAngles().yaw, 0 ) )
             ply:UnStuck( pos, OnExit )
         else
             timer.Simple( 0, function()
@@ -614,7 +612,7 @@ hook.Add( "EntityRemoved", "Sitting_EntityRemoved", function( ent )
         end
     end
 
-    for k, v in pairs( ents.FindByClass( "prop_vehicle_prisoner_pod" ) ) do
+    for _, v in pairs( ents.FindByClass( "prop_vehicle_prisoner_pod" ) ) do
         if ( v:GetParent() == ent ) then
             if IsValid( v:GetDriver() ) then
                 v:GetDriver():ExitVehicle()
@@ -648,7 +646,7 @@ hook.Add( "InitPostEntity", "SAW_CompatFix", function()
                     ply:ExitVehicle()
                     ply:SetPos( veh:LocalToWorld( Vector( 75, 0, 5 ) ) )
 
-                    if veh:GetClass() == "prop_vehicle_prisoner_pod" and not ( ply == veh.vehicle:GetDriver() ) then
+                    if veh:GetClass() == "prop_vehicle_prisoner_pod" and ply ~= veh.vehicle:GetDriver() then
                         PM_SendPassengers( veh.vehicle:GetDriver() )
                     end
 
@@ -659,7 +657,7 @@ hook.Add( "InitPostEntity", "SAW_CompatFix", function()
                     ply:ExitVehicle()
                     ply:SetPos( veh:LocalToWorld( Vector( -75, 0, 5 ) ) )
 
-                    if veh:GetClass() == "prop_vehicle_prisoner_pod" and not ( ply == veh.vehicle:GetDriver() ) then
+                    if veh:GetClass() == "prop_vehicle_prisoner_pod" and ply ~= veh.vehicle:GetDriver() then
                         PM_SendPassengers( veh.vehicle:GetDriver() )
                     end
 

@@ -45,7 +45,6 @@ function meta:UnStuck( pos, callback )
             { 38, 118, 20 }, --rho
             { 0.14, 0.94, 0.2 }, --theta
             { 0.14, 3.14, 0.5 }, --phi
-            
         }
 
         local state = { ranges[1][1], ranges[2][1], ranges[3][1] }
