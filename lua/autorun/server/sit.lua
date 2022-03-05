@@ -51,10 +51,10 @@ local function Sit(ply, pos, ang, parent, parentbone,  func, exit)
     vehicle:Activate()
 
     vehicle.DoNotDuplicate = true
-    
-    if not IsValid(vehicle) or not IsValid(vehicle:GetPhysicsObject()) then 
+
+    if not IsValid(vehicle) or not IsValid(vehicle:GetPhysicsObject()) then
         SafeRemoveEntity(vehicle)
-        return false 
+        return false
     end
 
     local phys = vehicle:GetPhysicsObject()
@@ -119,7 +119,7 @@ local function Sit(ply, pos, ang, parent, parentbone,  func, exit)
     vehicle.removeonexit = true
     vehicle.exit = exit
     vehicle.sittingPly = ply
-    
+
     local ang = vehicle:GetAngles()
     ply:SetEyeAngles(Angle(0,90,0))
     if func then
@@ -318,12 +318,12 @@ function META.Sit(ply, EyeTrace, ang, parent, parentbone, func, exit)
     EyeTrace2Tr.filter = ply
     EyeTrace2Tr.mins = Vector(-5,-5,-5)
     EyeTrace2Tr.maxs = Vector(5,5,5)
-    
+
     local EyeTrace2 = util.TraceHull(EyeTrace2Tr)
     --if EyeTrace2.Entity ~= EyeTrace.Entity then return end
 
     local ang = EyeTrace.HitNormal:Angle() + Angle(-270, 0, 0)
-    
+
     if(math.abs(ang.pitch) <= 15) then
         local ang = Angle()
         local filter = player.GetAll()
@@ -351,7 +351,7 @@ function META.Sit(ply, EyeTrace, ang, parent, parentbone, func, exit)
             distsang[I] = trace
         end
         local infront = ((ang_smallest_hori or 0) + 180) % 360
-        
+
         if #dists == 0 and ply:GetInfoNum("sitting_ground_sit", 1) == 1 and AllowGroundSit:GetBool() then
             if not ply:GetNWBool("ground_sit") then
                 ply:ConCommand("ground_sit")
@@ -469,7 +469,6 @@ local cache = {}
 
 local CheckSeat
 function CheckSeat(ply, ent, tbl)
-    
     if not ply:InVehicle() then return true end
 
     local vehicle = ply:GetVehicle()
@@ -502,7 +501,7 @@ function CheckSeat(ply, ent, tbl)
 end
 local function CheckSeat2(ply, ent)
     if not IsValid(ply:GetVehicle()) or not ply:GetVehicle().playerdynseat then return end
-    
+
     if cache[ply:SteamID()] and cache[ply:SteamID()][ent:EntIndex()] and (CurTime() - cache[ply:SteamID()][ent:EntIndex()][1]) < 5 then
         return cache[ply:SteamID()][ent:EntIndex()][2]
     end
@@ -543,7 +542,7 @@ hook.Add("CanExitVehicle","Remove_Seat",function(self, ply)
         -- Movie gamemode
         if ply.UnStuck then
             local pos,ang = LocalToWorld(Vector(0,36,20),Angle(),self:GetPos(),Angle(0,self:GetAngles().yaw,0))
-        
+
             ply:UnStuck(pos, OnExit)
         else
             timer.Simple(0, function()
@@ -605,7 +604,6 @@ hook.Add("EntityRemoved","Sitting_EntityRemoved",function(ent)
             end
         end
     end
-    
     for k,v in pairs(ents.FindByClass("prop_vehicle_prisoner_pod")) do
         if(v:GetParent() == ent) then
             if IsValid(v:GetDriver()) then
