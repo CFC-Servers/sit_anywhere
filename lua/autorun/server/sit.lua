@@ -37,6 +37,10 @@ local function ShouldAlwaysSit( ply )
 end
 
 local function Sit( ply, pos, ang, parent, _, func, exit )
+    if IsValid( ply ) then
+        print("[SitAnywhere] Player asked to sit!", ply, ply:SteamID(), pos, parent )
+    end
+
     ply:ExitVehicle()
     local vehicle = ents.Create( "prop_vehicle_prisoner_pod" )
     vehicle:SetAngles( ang )
